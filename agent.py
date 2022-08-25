@@ -1,13 +1,13 @@
 import torch
 import random
 import numpy as np
-from model import Model, Trainer
+from net import Net, Trainer
 from game import TicTacToe
 from collections import deque
 import time
 
 MAX_MEMORY = 100_000
-BATCH_SIZE = 1000
+BATCH_SIZE = 60
 LR = 0.01
 X = 1
 O = 2
@@ -19,9 +19,9 @@ class Agent:
         self.epsilon = 0
         self.gamma = 0.99
         self.memory = deque(maxlen=MAX_MEMORY)
-        self.q_net = Model()
-        self.target_net = Model()
-        self.trainer = Trainer(self.q_net, lr=LR, gamma=self.gamma)
+        self.q_net = Net()
+        self.target_net = Net()
+        self.trainer = Trainer(self.q_net, self.target_net, lr=LR, gamma=self.gamma)
         self.pieces = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0])
         self.side = side
 
@@ -33,9 +33,10 @@ class Agent:
 
     def get_state(self, game):
 
-        state = np.concatenate((self.pieces,
-                         game.get_side(self.get_other()),
-                          game.get_empty()), axis=None)
+        state = np.array([(self.pieces),
+                          (game.get_side(self.get_other())),
+                          (game.get_empty())])
+        state = state.reshape(3, 3, 3)
         return state
 
     def remember(self, state, action, reward, next_state, done):
@@ -58,11 +59,13 @@ class Agent:
         final_move = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         if random.randint(0, 200) < self.epsilon or self.n_games <= 500:
-            move = random.randint(0, 8)
-            while state[move + 18] == 0:
-                move = random.randint(0, 8)
+            r = random.randint(0, 2)
+            c = random.randint(0, 2)
+            while state[2, r, c] == 0:
+                r = random.randint(0, 8)
+                c = random.randint(0, 8)
 
-            final_move[move] = 1
+            final_move[(3 * r) + c] = 1
         else:
             state0 = torch.tensor(state, dtype=torch.float)
             actions = self.q_net.forward(state0)

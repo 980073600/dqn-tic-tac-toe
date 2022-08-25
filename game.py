@@ -1,6 +1,6 @@
 import pygame
 import numpy as np
-
+# TO-DO: Bug testing
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 X = 1
