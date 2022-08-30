@@ -55,18 +55,21 @@ class Agent:
         self.trainer.train_step(state, action, reward, next_state, done)
 
     def get_action(self, state):
-        self.epsilon = 160 - (self.n_games - 500)
+        self.epsilon = 160
+        if self.n_games >= 500:
+            self.epsilon = 160 - self.n_games
         final_move = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         if random.randint(0, 200) < self.epsilon or self.n_games <= 500:
             r = random.randint(0, 2)
             c = random.randint(0, 2)
             while state[2, r, c] == 0:
-                r = random.randint(0, 8)
-                c = random.randint(0, 8)
+                r = random.randint(0, 2)
+                c = random.randint(0, 2)
 
             final_move[(3 * r) + c] = 1
         else:
+            print("*")
             state0 = torch.tensor(state, dtype=torch.float)
             actions = self.q_net.forward(state0)
             action = torch.argmax(actions).item()

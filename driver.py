@@ -18,21 +18,24 @@ def train():
             final_move = x.get_action(state_old)
             x_reward, o_reward, done = game.play_move(final_move)
             state_new = x.get_state(game)
-            x.train_short_memory(state_old, x_reward, final_move, state_new, done)
+            if n_games > 500:
+                x.train_short_memory(state_old, x_reward, final_move, state_new, done)
             x.remember(state_old, final_move, x_reward, state_new, done)
         else:
             state_old = o.get_state(game)
             final_move = o.get_action(state_old)
             x_reward, o_reward, done = game.play_move(final_move)
             state_new = o.get_state(game)
-            o.train_short_memory(state_old, o_reward, final_move, state_new, done)
+            if n_games > 500:
+                o.train_short_memory(state_old, o_reward, final_move, state_new, done)
             o.remember(state_old, final_move, o_reward, state_new, done)
 
         if done:
             game.reset()
             n_games += 1
-            x.train_long_memory()
-            o.train_long_memory()
+            if n_games > 501:
+                x.train_long_memory()
+                o.train_long_memory()
 
             print("Game: ", n_games)
 
