@@ -7,10 +7,16 @@ import torch.nn.functional as F
 class Net(nn.Module):
     def __init__(self):
         super().__init__()
-        self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding='same')
-        self.conv2 = nn.Conv2d(64, 128, kernel_size=3, stride=1, padding='same')
-        self.conv3 = nn.Conv2d(128, 256, kernel_size=3, stride=1, padding='same')
 
+        self.conv = nn.Sequential(
+            nn.Conv2d(3, 64, kernel_size=3, stride=1, padding='same'), nn.ReLU(),
+            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding='same'), nn.ReLU(),
+            nn.Conv2d(128, 256, kernel_size=3, stride=1, padding='same'), nn.ReLU()
+        )
+
+        self.value_stream = nn.Sequential(
+            nn.Linear(2304, 243), nn.ReLU()
+        )
         self.flat = nn.Flatten(-3, -1)
 
         self.fc1 = nn.Linear(2304, 243)
@@ -40,14 +46,13 @@ class Trainer:
         self.sync_target_frames = 100
         self.frame_idx = 0
 
-    def train_step(self, state, reward, action, next_state, done):
+    def train_step(self, state, action, reward, next_state, done):
         self.frame_idx += 1
         state = torch.tensor(state, dtype=torch.float)
         next_state = torch.tensor(next_state, dtype=torch.float)
         action = torch.tensor(action, dtype=torch.long)
         reward = torch.tensor(reward, dtype=torch.float)
-
-        if len(action.shape) == 1:
+        if len(state.shape) == 3:
             state = torch.unsqueeze(state, 0)
             next_state = torch.unsqueeze(next_state, 0)
             action = torch.unsqueeze(action, 0)

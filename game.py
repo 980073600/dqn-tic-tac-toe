@@ -1,6 +1,5 @@
 import pygame
 import numpy as np
-# TO-DO: Bug testing
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 X = 1
@@ -124,7 +123,6 @@ class TicTacToe:
                     pygame.draw.line(self.display, BLACK,
                                      ((self.w / 3) * 0.9 + (2 * (self.w / 3)), (self.h / 3) * 0.1 + (2 * (self.h / 3))),
                                      ((self.w / 3) * 0.1 + (2 * (self.w / 3)), (self.h / 3) * 0.9 + (2 * (self.h / 3))))
-
             elif s == O:
                 if i == 0:
                     pygame.draw.circle(self.display, BLACK, (self.w / 6, self.h / 6), 75, 1)
@@ -157,65 +155,47 @@ class TicTacToe:
 
         pygame.display.flip()
 
-    def play_move(self, action):
+    def play_move(self, action, side):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
 
         if np.array_equal(action, [1, 0, 0, 0, 0, 0, 0, 0, 0]):
-            if self.move % 2 != 0 and self.board[0] == EMPTY:
-                self.board[0] = X
-            elif self.move % 2 == 0 and self.board[0] == EMPTY:
-                self.board[0] = O
+            if self.board[0] == EMPTY:
+                self.board[0] = side
 
         if np.array_equal(action, [0, 1, 0, 0, 0, 0, 0, 0, 0]):
-            if self.move % 2 != 0 and self.board[1] == EMPTY:
-                self.board[1] = X
-            elif self.move % 2 == 0 and self.board[1] == EMPTY:
-                self.board[1] = O
+            if self.board[1] == EMPTY:
+                self.board[1] = side
 
         if np.array_equal(action, [0, 0, 1, 0, 0, 0, 0, 0, 0]):
-            if self.move % 2 != 0 and self.board[2] == EMPTY:
-                self.board[2] = X
-            elif self.move % 2 == 0 and self.board[2] == EMPTY:
-                self.board[2] = X
+            if self.board[2] == EMPTY:
+                self.board[2] = side
 
         if np.array_equal(action, [0, 0, 0, 1, 0, 0, 0, 0, 0]):
-            if self.move % 2 != 0 and self.board[3] == EMPTY:
-                self.board[3] = X
-            elif self.move % 2 == 0 and self.board[3] == EMPTY:
-                self.board[3] = O
+            if self.board[3] == EMPTY:
+                self.board[3] = side
 
         if np.array_equal(action, [0, 0, 0, 0, 1, 0, 0, 0, 0]):
-            if self.move % 2 != 0 and self.board[4] == EMPTY:
-                self.board[4] = X
-            elif self.move % 2 == 0 and self.board[4] == EMPTY:
-                self.board[4] = O
+            if self.board[4] == EMPTY:
+                self.board[4] = side
 
         if np.array_equal(action, [0, 0, 0, 0, 0, 1, 0, 0, 0]):
-            if self.move % 2 != 0 and self.board[5] == EMPTY:
-                self.board[5] = X
-            elif self.move % 2 == 0 and self.board[5] == EMPTY:
-                self.board[5] = O
+            if self.board[5] == EMPTY:
+                self.board[5] = side
 
         if np.array_equal(action, [0, 0, 0, 0, 0, 0, 1, 0, 0]):
-            if self.move % 2 != 0 and self.board[6] == EMPTY:
-                self.board[6] = X
-            elif self.move % 2 == 0 and self.board[6] == EMPTY:
-                self.board[6] = O
+            if self.board[6] == EMPTY:
+                self.board[6] = side
 
         if np.array_equal(action, [0, 0, 0, 0, 0, 0, 0, 1, 0]):
-            if self.move % 2 != 0 and self.board[7] == EMPTY:
-                self.board[7] = X
-            elif self.move % 2 == 0 and self.board[7] == EMPTY:
-                self.board[7] = O
+            if self.board[7] == EMPTY:
+                self.board[7] = side
 
         if np.array_equal(action, [0, 0, 0, 0, 0, 0, 0, 0, 1]):
-            if self.move % 2 != 0 and self.board[8] == EMPTY:
-                self.board[8] = X
-            elif self.move % 2 == 0 and self.board[8] == EMPTY:
-                self.board[8] = O
+            if self.board[8] == EMPTY:
+                self.board[8] = side
 
         self.update_ui()
 
@@ -234,7 +214,7 @@ class TicTacToe:
             self.reset()
 
             return x_reward, o_reward, game_over
-
+        print(self.move)
         self.move += 1
         return x_reward, o_reward, game_over
 
@@ -292,10 +272,10 @@ class TicTacToe:
                 o_win = True
                 return True, x_win, o_win
         if self.board[2] == self.board[4] and self.board[4] == self.board[6]:
-            if self.board[2] == O:
+            if self.board[2] == X:
                 x_win = True
                 return True, x_win, o_win
-            if self.board[2] == X:
+            if self.board[2] == O:
                 o_win = True
                 return True, x_win, o_win
 
