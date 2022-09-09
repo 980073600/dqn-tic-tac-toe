@@ -13,26 +13,25 @@ class Net(nn.Module):
             nn.Conv2d(64, 128, kernel_size=3, stride=1, padding='same'), nn.ReLU(),
             nn.Conv2d(128, 256, kernel_size=3, stride=1, padding='same'), nn.ReLU()
         )
-
-        self.value_stream = nn.Sequential(
-            nn.Linear(2304, 243), nn.ReLU()
-        )
         self.flat = nn.Flatten(-3, -1)
-
-        self.fc1 = nn.Linear(2304, 243)
-        self.fc2 = nn.Linear(243, 243)
-        self.fc3 = nn.Linear(243, 9)
+        self.value_stream = nn.Sequential(
+            nn.Linear(2304, 243), nn.ReLU(),
+            nn.Linear(243, 1)
+        )
+        self.advantage_stream = nn.Sequential(
+            nn.Linear(2304, 243), nn.ReLU(),
+            nn.Linear(243, 9)
+        )
 
     def forward(self, x):
-        x = F.relu(self.conv1(x))
-        x = F.relu(self.conv2(x))
-        x = F.relu(self.conv3(x))
-        x = self.flat(x)
-        x = F.relu((self.fc1(x)))
-        x = F.relu((self.fc2(x)))
-        x = F.softmax(self.fc3(x), -1)
+        features = self.conv(x)
+        features = self.flat(-3, -1)
+        #features = features.view(features.size(0), -1)
+        values = self.value_stream(features)
+        advantages = self.advantage_stream(features)
+        qvals = values + (advantages - advantages.mean())
 
-        return x
+        return qvals
 
 
 class Trainer:

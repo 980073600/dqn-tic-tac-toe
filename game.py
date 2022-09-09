@@ -202,7 +202,6 @@ class TicTacToe:
         x_reward = 0
         o_reward = 0
         game_over, x_win, o_win = self.is_over()
-
         if game_over:
             if x_win:
                 x_reward = 10
@@ -214,7 +213,7 @@ class TicTacToe:
             self.reset()
 
             return x_reward, o_reward, game_over
-        print(self.move)
+
         self.move += 1
         return x_reward, o_reward, game_over
 
