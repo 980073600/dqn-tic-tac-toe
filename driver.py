@@ -24,7 +24,6 @@ def train():
                 x.train_short_memory(state_old, final_move, x_reward, state_new, done)
             x.remember(state_old, final_move, x_reward, state_new, done)
             count += 1
-            time.sleep(1)
 
             if done:
                 game.reset()
@@ -45,7 +44,6 @@ def train():
                 o.train_short_memory(state_old, final_move, x_reward, state_new, done)
             o.remember(state_old, final_move, o_reward, state_new, done)
             count += 1
-            time.sleep(1)
 
             if done:
                 game.reset()

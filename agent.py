@@ -24,8 +24,6 @@ class Agent:
         self.trainer = Trainer(self.q_net, self.target_net, lr=LR, gamma=self.gamma)
         self.pieces = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0])
         self.side = side
-        self.action_log = []
-        self.board_state_log = []
 
     def get_other(self):
         if self.side == X:
@@ -57,7 +55,6 @@ class Agent:
         self.trainer.train_step(state, action, reward, next_state, done)
 
     def get_action(self, state):
-        self.board_state_log.append(state)
         self.epsilon = 0
         if self.n_games > 500:
             self.epsilon = 160 - (self.n_games - 500)
@@ -88,9 +85,4 @@ class Agent:
                 action = torch.argmax(actions).item()
             final_move[action] = 1
 
-        self.action_log.append(final_move)
         return final_move
-
-    def get_logs(self):
-        return self.action_log, self.board_state_log
-

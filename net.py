@@ -7,31 +7,34 @@ import torch.nn.functional as F
 class Net(nn.Module):
     def __init__(self):
         super().__init__()
-
+        self.input_dim = [3, 3, 3]
+        self.output_dim = 9
         self.conv = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3, stride=1, padding='same'), nn.ReLU(),
+            nn.Conv2d(self.input_dim[0], 64, kernel_size=3, stride=1, padding='same'), nn.ReLU(),
             nn.Conv2d(64, 128, kernel_size=3, stride=1, padding='same'), nn.ReLU(),
             nn.Conv2d(128, 256, kernel_size=3, stride=1, padding='same'), nn.ReLU()
         )
-        self.flat = nn.Flatten(-3, -1)
+        self.fc_input_dim = self.feature_size()
         self.value_stream = nn.Sequential(
-            nn.Linear(2304, 243), nn.ReLU(),
+            nn.Linear(self.fc_input_dim, 243), nn.ReLU(),
             nn.Linear(243, 1)
         )
         self.advantage_stream = nn.Sequential(
-            nn.Linear(2304, 243), nn.ReLU(),
-            nn.Linear(243, 9)
+            nn.Linear(self.fc_input_dim, 243), nn.ReLU(),
+            nn.Linear(243, self.output_dim)
         )
 
     def forward(self, x):
         features = self.conv(x)
-        features = self.flat(-3, -1)
-        #features = features.view(features.size(0), -1)
+        features = features.view(features.size(0), -1)
         values = self.value_stream(features)
         advantages = self.advantage_stream(features)
         qvals = values + (advantages - advantages.mean())
 
         return qvals
+
+    def feature_size(self):
+        return self.conv(torch.autograd.Variable(torch.zeros(1, *self.input_dim))).view(1, -1).size(1)
 
 
 class Trainer:
@@ -66,7 +69,8 @@ class Trainer:
             q_new = reward[idx]
 
             if not done[idx]:
-                next_state_values = self.target_net(next_state[idx])
+                tensor = next_state[idx].view(1, 3, 3, 3)
+                next_state_values = self.target_net(tensor)
                 q_new = reward[idx] + self.gamma * torch.max(next_state_values)
 
             target[idx][torch.argmax(action).item()] = q_new
