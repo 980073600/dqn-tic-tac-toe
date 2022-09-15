@@ -10,9 +10,9 @@ class Net(nn.Module):
         self.input_dim = [3, 3, 3]
         self.output_dim = 9
         self.conv = nn.Sequential(
-            nn.Conv2d(self.input_dim[0], 64, kernel_size=3, stride=1, padding='same'), nn.ReLU(),
-            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding='same'), nn.ReLU(),
-            nn.Conv2d(128, 256, kernel_size=3, stride=1, padding='same'), nn.ReLU()
+            nn.Conv2d(self.input_dim[0], 128, kernel_size=3, stride=1, padding='same'), nn.ReLU(),
+            nn.Conv2d(128, 128, kernel_size=3, stride=1, padding='same'), nn.ReLU(),
+            nn.Conv2d(128, 64, kernel_size=3, stride=1, padding='same'), nn.ReLU()
         )
         self.fc_input_dim = self.feature_size()
         self.value_stream = nn.Sequential(
@@ -47,10 +47,12 @@ class Trainer:
         self.loss = nn.MSELoss()
         self.sync_target_frames = 100
         self.frame_idx = 0
+        self.beta = 0.00001
 
     def train_step(self, state, action, reward, next_state, done):
         self.frame_idx += 1
         state = torch.tensor(state, dtype=torch.float)
+        print(next_state)
         next_state = torch.tensor(next_state, dtype=torch.float)
         action = torch.tensor(action, dtype=torch.long)
         reward = torch.tensor(reward, dtype=torch.float)
@@ -77,6 +79,8 @@ class Trainer:
 
         self.optimizer.zero_grad()
         loss = self.loss(target, pred)
+        norm = sum(p.pow(2.0).sum() for p in self.net.parameters())
+        loss = loss + self.beta * norm
         loss.backward()
         self.optimizer.step()
 

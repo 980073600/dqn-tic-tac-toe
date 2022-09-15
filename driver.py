@@ -1,5 +1,3 @@
-import torch
-import numpy as np
 from agent import Agent
 from game import TicTacToe
 import time
@@ -20,12 +18,11 @@ def train():
             final_move = x.get_action(state_old)
             x_reward, o_reward, done = game.play_move(final_move, X)
             state_new = x.get_state(game)
-            if n_games > 500:
-                x.train_short_memory(state_old, final_move, x_reward, state_new, done)
-            x.remember(state_old, final_move, x_reward, state_new, done)
             count += 1
 
             if done:
+                x.remember(x_reward)
+                o.remember(o_reward)
                 game.reset()
                 n_games += 1
                 count = 1
@@ -40,12 +37,14 @@ def train():
             final_move = o.get_action(state_old)
             x_reward, o_reward, done = game.play_move(final_move, O)
             state_new = o.get_state(game)
-            if n_games > 500:
-                o.train_short_memory(state_old, final_move, x_reward, state_new, done)
-            o.remember(state_old, final_move, o_reward, state_new, done)
+            #if n_games > 500:
+                #o.train_short_memory(state_old, final_move, x_reward, state_new, done)
+            #o.remember(o_reward)
             count += 1
 
             if done:
+                x.remember(x_reward)
+                o.remember(o_reward)
                 game.reset()
                 n_games += 1
                 count = 1
@@ -55,7 +54,7 @@ def train():
 
                 print("Game: ", n_games)
 
-        if n_games > 1300:
+        if n_games > 600:
             time.sleep(1)
 
 
