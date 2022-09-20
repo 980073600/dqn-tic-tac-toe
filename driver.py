@@ -54,7 +54,7 @@ def train():
 
                 print("Game: ", n_games)
 
-        if n_games > 600:
+        if n_games > 1000:
             time.sleep(1)
 
 

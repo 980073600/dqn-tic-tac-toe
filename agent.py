@@ -19,7 +19,7 @@ class Agent:
     def __init__(self, side):
         self.n_games = 0
         self.epsilon = 0
-        self.epsilon_decrease = 0.9997
+        self.epsilon_decrease = 0.997
         self.gamma = 0.99
         self.win_memory = deque(maxlen=MAX_MEMORY)
         self.draw_memory = deque(maxlen=MAX_MEMORY)
@@ -58,7 +58,9 @@ class Agent:
         for i in range(length - 1):
             memory.append((self.board_position_log[i], self.action_log[i], 0, self.board_position_log[i + 1], False))
 
-        memory.append((self.board_position_log[length - 1], self.action_log[length - 1], reward, None, True))
+        memory.append((self.board_position_log[length - 1], self.action_log[length - 1], reward, self.board_position_log[length - 1], True))
+        self.board_position_log = []
+        self.action_log = []
 
     def train_long_memory(self):
         BATCH_THIRD = 20
@@ -79,7 +81,7 @@ class Agent:
             self.epsilon = 0.9999
         final_move = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-        if random.randint(0, 200) < self.epsilon or self.n_games < 500:
+        if random.random() > self.epsilon or self.n_games < 500:
             r = random.randint(0, 2)
             c = random.randint(0, 2)
             while state[2, r, c] == 0:
@@ -88,7 +90,6 @@ class Agent:
 
             final_move[(3 * r) + c] = 1
         else:
-            print("*")
             state0 = torch.tensor(state, dtype=torch.float)
             actions = self.q_net.forward(state0)
             actions = F.softmax(actions)
@@ -104,5 +105,5 @@ class Agent:
                 actions[idx] = -100
                 action = torch.argmax(actions).item()
             final_move[action] = 1
-        self.action_log.append(final_move)
+        self.action_log.append(final_move.copy())
         return final_move

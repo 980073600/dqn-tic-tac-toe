@@ -52,9 +52,8 @@ class Trainer:
     def train_step(self, state, action, reward, next_state, done):
         self.frame_idx += 1
         state = torch.tensor(state, dtype=torch.float)
-        print(next_state)
-        next_state = torch.tensor(next_state, dtype=torch.float)
         action = torch.tensor(action, dtype=torch.long)
+        next_state = torch.tensor(next_state, dtype=torch.float)
         reward = torch.tensor(reward, dtype=torch.float)
         if len(state.shape) == 3:
             state = torch.unsqueeze(state, 0)
