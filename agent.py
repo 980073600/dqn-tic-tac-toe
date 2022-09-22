@@ -19,7 +19,7 @@ class Agent:
     def __init__(self, side):
         self.n_games = 0
         self.epsilon = 0
-        self.epsilon_decrease = 0.997
+        self.epsilon_decrease = 0.9997
         self.gamma = 0.99
         self.win_memory = deque(maxlen=MAX_MEMORY)
         self.draw_memory = deque(maxlen=MAX_MEMORY)

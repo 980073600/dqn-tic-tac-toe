@@ -7,6 +7,7 @@ O = 2
 
 
 def train():
+    n_draws_per_hundred = 0
     n_games = 0
     x = Agent(X)
     o = Agent(O)
@@ -46,6 +47,8 @@ def train():
                 x.remember(x_reward)
                 o.remember(o_reward)
                 game.reset()
+                if x_reward == 0:
+                    n_draws_per_hundred += 1
                 n_games += 1
                 count = 1
                 if n_games > 500:
@@ -54,7 +57,13 @@ def train():
 
                 print("Game: ", n_games)
 
-        if n_games > 1000:
+        if n_draws_per_hundred == 100:
+            o.q_net.save()
+
+        if n_games % 100 == 0:
+            n_draws_per_hundred = 0
+
+        if n_games > 16400:
             time.sleep(1)
 
 
