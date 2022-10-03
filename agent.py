@@ -18,7 +18,7 @@ O = 2
 class Agent:
     def __init__(self, side):
         self.n_games = 0
-        self.epsilon = 0
+        self.epsilon = 0.9999
         self.epsilon_decrease = 0.9997
         self.gamma = 0.99
         self.win_memory = deque(maxlen=MAX_MEMORY)
@@ -39,10 +39,11 @@ class Agent:
             return X
 
     def get_state(self, game):
-        state = np.array([(self.pieces),
-                          (game.get_side(self.get_other())),
-                          (game.get_empty())])
+        state = np.array([self.pieces.astype(int),
+                          (game.get_side(self.get_other())).astype(int),
+                          (game.get_empty()).astype(int)])
         state = state.reshape(3, 3, 3)
+        state = np.transpose(state, [0, 1, 2])
         self.board_position_log.append(state.copy())
         return state
 
@@ -80,8 +81,8 @@ class Agent:
         if self.n_games > 500:
             self.epsilon = 0.9999
         final_move = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-        if random.random() > self.epsilon or self.n_games < 500:
+        action = 0
+        if random.random() > self.epsilon:
             r = random.randint(0, 2)
             c = random.randint(0, 2)
             while state[2, r, c] == 0:
@@ -89,11 +90,11 @@ class Agent:
                 c = random.randint(0, 2)
 
             final_move[(3 * r) + c] = 1
+            action = (3 * r) + c
         else:
             state0 = torch.tensor(state, dtype=torch.float)
             actions = self.q_net.forward(state0)
             actions = F.softmax(actions)
-            action = torch.argmax(actions).item()
 
             while state[action] != 0:
                 i = 0
@@ -105,5 +106,6 @@ class Agent:
                 actions[idx] = -100
                 action = torch.argmax(actions).item()
             final_move[action] = 1
-        self.action_log.append(final_move.copy())
+
+        self.action_log.append(action)
         return final_move
