@@ -59,7 +59,7 @@ class Agent:
         for i in range(length - 1):
             memory.append((self.board_position_log[i], self.action_log[i], 0, self.board_position_log[i + 1], False))
 
-        memory.append((self.board_position_log[length - 1], self.action_log[length - 1], reward, self.board_position_log[length - 1], True))
+        memory.append((self.board_position_log[length - 1], self.action_log[length - 1], reward, np.array(([[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[1, 1, 1], [1, 1, 1], [1, 1, 1]])), True))
         self.board_position_log = []
         self.action_log = []
 
@@ -103,7 +103,7 @@ class Agent:
                         idx = i
                     i += 1
 
-                actions[idx] = -100
+                actions[idx] = -1
                 action = torch.argmax(actions).item()
             final_move[action] = 1
 
