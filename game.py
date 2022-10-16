@@ -20,14 +20,6 @@ class TicTacToe:
         self.o_wins = 0
         self.reset()
 
-    def hash_value(self):
-        res = 0
-        for i in range(9):
-            res *= 3
-            res += self.board[i]
-
-        return res
-
     def get_side(self, side):
         arr = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0])
         idx = 0
@@ -46,7 +38,7 @@ class TicTacToe:
 
     def get_empty(self):
         idx = 0
-        arr = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0], dtype=int)
+        arr = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0])
         for i in self.board:
             if i == 0:
                 arr[idx] = 1
@@ -212,11 +204,11 @@ class TicTacToe:
         game_over, x_win, o_win = self.is_over()
         if game_over:
             if x_win:
-                x_reward = 1
-                o_reward = -1
+                x_reward = 10
+                o_reward = -10
             elif o_win:
-                x_reward = -1
-                o_reward = 1
+                x_reward = -10
+                o_reward = 10
 
             self.reset()
 
@@ -295,9 +287,7 @@ class TicTacToe:
 
     def who_won(self):
         done, x_win, o_win = self.is_over()
-        if x_win == True:
+        if x_win:
             return X
-        elif o_win == True:
+        elif o_win:
             return O
-        else:
-            return 0

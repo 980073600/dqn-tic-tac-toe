@@ -1,6 +1,7 @@
 from agent import Agent
 from game import TicTacToe
 import time
+from minmaxagent import MinMaxAgent
 
 X = 1
 O = 2
@@ -11,21 +12,17 @@ def train():
     n_games = 0
     x_wins = 0
     o_wins = 0
-    x = Agent(X)
-    o = Agent(O)
     game = TicTacToe(800, 600)
+    x = MinMaxAgent(X, game)
+    o = Agent(O)
     count = 1
     while True:
         if count % 2 != 0:
-            state_old = x.get_state(game)
-            final_move = x.get_action(state_old)
+            final_move = x.get_action()
             x_reward, o_reward, done = game.play_move(final_move, X)
-            state_new = x.get_state(game)
             count += 1
-
             if done:
-                x.remember(x_reward)
-                o.remember(o_reward)
+                o.remember(x_reward)
                 if x_reward == 0:
                     n_draws += 1
                 elif x_reward == 1:
@@ -36,7 +33,6 @@ def train():
                 n_games += 1
                 count = 1
                 if n_games > 500:
-                    x.train_long_memory()
                     o.train_long_memory()
 
                 print(n_games)
@@ -46,13 +42,9 @@ def train():
             final_move = o.get_action(state_old)
             x_reward, o_reward, done = game.play_move(final_move, O)
             state_new = o.get_state(game)
-            #if n_games > 500:
-                #o.train_short_memory(state_old, final_move, x_reward, state_new, done)
-            #o.remember(o_reward)
             count += 1
 
             if done:
-                x.remember(x_reward)
                 o.remember(o_reward)
                 if x_reward == 0:
                     n_draws += 1
@@ -64,7 +56,6 @@ def train():
                 n_games += 1
                 count = 1
                 if n_games > 500:
-                    x.train_long_memory()
                     o.train_long_memory()
 
                 print(n_games)

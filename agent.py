@@ -2,9 +2,7 @@ import torch
 import random
 import numpy as np
 from net import Net, Trainer
-from game import TicTacToe
 from collections import deque
-import time
 import torch.nn.functional as F
 
 
