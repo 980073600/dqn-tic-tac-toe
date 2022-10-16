@@ -19,9 +19,7 @@ class Agent:
         self.epsilon = 0.9999
         self.epsilon_decrease = 0.9997
         self.gamma = 0.99
-        self.win_memory = deque(maxlen=MAX_MEMORY)
-        self.draw_memory = deque(maxlen=MAX_MEMORY)
-        self.loss_memory = deque(maxlen=MAX_MEMORY)
+        self.memory = deque(maxlen=MAX_MEMORY)
         self.q_net = Net()
         self.target_net = Net()
         self.trainer = Trainer(self.q_net, self.target_net, lr=LR, gamma=self.gamma)
@@ -47,26 +45,15 @@ class Agent:
 
     def remember(self, reward):
         length = len(self.action_log)
-        if reward == 1:
-            memory = self.win_memory
-        elif reward == 0:
-            memory = self.draw_memory
-        else:
-            memory = self.loss_memory
-
         for i in range(length - 1):
-            memory.append((self.board_position_log[i], self.action_log[i], 0, self.board_position_log[i + 1], False))
+            self.memory.append((self.board_position_log[i], self.action_log[i], 0, self.board_position_log[i + 1], False))
 
-        memory.append((self.board_position_log[length - 1], self.action_log[length - 1], reward, np.array(([[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[1, 1, 1], [1, 1, 1], [1, 1, 1]])), True))
+        self.memory.append((self.board_position_log[length - 1], self.action_log[length - 1], reward, np.array(([[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[1, 1, 1], [1, 1, 1], [1, 1, 1]])), True))
         self.board_position_log = []
         self.action_log = []
 
     def train_long_memory(self):
-        BATCH_THIRD = 20
-        batch = random.sample(self.win_memory, BATCH_THIRD)
-        batch.extend(random.sample(self.draw_memory, BATCH_THIRD))
-        batch.extend(random.sample(self.loss_memory, BATCH_THIRD))
-
+        batch = random.sample(self.memory, BATCH_SIZE)
         states, actions, rewards, next_states, dones = zip(*batch)
         self.epsilon *= self.epsilon_decrease
         self.trainer.train_step(states, actions, rewards, next_states, dones)
