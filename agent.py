@@ -83,6 +83,7 @@ class Agent:
 
             while state[action] != 0:
                 i = 0
+                idx = None
                 for e in actions:
                     if e == torch.max(actions):
                         idx = i

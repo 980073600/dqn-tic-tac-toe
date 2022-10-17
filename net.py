@@ -74,9 +74,7 @@ class Trainer:
 
         target = pred.clone()
         for idx in range(len(done)):
-
             q_new = reward[idx]
-
             if not done[idx]:
                 tensor = next_state[idx].view(1, 3, 3, 3)
                 next_state_values = self.target_net(tensor)

@@ -6,14 +6,13 @@ O = 2
 
 
 class MinMaxAgent:
-
     def __init__(self, side, game):
         self.game = game
         self.side = side
         self.cache = {}
         self.board = game.board
 
-    def get_action(self):
+    def get_action(self, x):
         final_move = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         best_score = -math.inf
         best_move = None
@@ -21,7 +20,7 @@ class MinMaxAgent:
         for i in range(9):
             if self.board[i] == EMPTY:
                 self.board[i] = self.side
-                score = self.minmax(False)
+                score = self.minmax(not x)
                 self.board[i] = EMPTY
                 if score > best_score:
                     best_score = score
