@@ -18,7 +18,7 @@ def train():
     count = 1
     while True:
         if count % 2 != 0:
-            final_move = x.get_action(True)
+            final_move = x.get_action()
             x_reward, o_reward, done = game.play_move(final_move, X)
             count += 1
             if done:
@@ -38,7 +38,7 @@ def train():
                 print(n_games)
 
         else:
-            final_move = o.get_action(False)
+            final_move = o.get_action()
             x_reward, o_reward, done = game.play_move(final_move, O)
             count += 1
             '''

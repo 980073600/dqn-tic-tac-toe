@@ -9,23 +9,25 @@ class MinMaxAgent:
     def __init__(self, side, game):
         self.game = game
         self.side = side
-        self.cache = {}
         self.board = game.board
 
-    def get_action(self, x):
+    def get_action(self):
+        print("get")
         final_move = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        best_score = -math.inf
-        best_move = None
-        self.board = self.game.board
+        best = -1000
+        move = None
         for i in range(9):
-            if self.board[i] == EMPTY:
-                self.board[i] = self.side
-                score = self.minmax(not x)
-                self.board[i] = EMPTY
-                if score > best_score:
-                    best_score = score
-                    best_move = i
-        final_move[best_move] = 1
+            if self.game.board[i] == EMPTY:
+                print(i)
+                self.game.board[i] = self.side
+                move = max(best, self.minimax(False))
+                self.game.board[i] = EMPTY
+
+            if move > best:
+                move = i
+                best = move
+
+        final_move[move] = 1
         return final_move
 
     def get_other(self):
@@ -34,20 +36,35 @@ class MinMaxAgent:
         elif self.side == O:
             return X
 
-    def minmax(self, turn):
-        done, o_win, x_win = self.game.is_over()
-        if not o_win and not x_win and done:
+    def minimax(self, is_max):
+        done, x_win, o_win = self.game.is_over()
+        #print(done, x_win, o_win)
+        if done and not x_win and not o_win:
+            #print("_______________")
             return 0
 
-        elif done:
-            return 1 if self.game.who_won() is self.side else -1
+        if done:
+            #print("*******************")
+            return 10 if self.game.who_won() == self.side else -10
 
-        scores = []
-        self.board = self.game.board
-        for i in range(9):
-            if self.board[i] == 0:
-                self.board[i] = self.side
-                scores.append(self.minmax(not turn))
-                self.board[i] = 0
+        if is_max:
+            print(is_max)
+            best = -1000
+            for i in range(9):
+                if self.game.board[i] == EMPTY:
+                    self.game.board[i] = self.side
+                    best = max(best, self.minimax(not is_max))
+                    self.game.board[i] = EMPTY
 
-        return max(scores) if turn else min(scores)
+            return best
+        else:
+            print(is_max)
+            best = 1000
+            for i in range(9):
+                if self.game.board[i] == EMPTY:
+                    print(i)
+                    self.game.board[i] = self.side
+                    best = min(best, self.minimax(not is_max))
+                    self.game.board[i] = EMPTY
+
+            return best
