@@ -12,15 +12,14 @@ class MinMaxAgent:
         self.board = game.board
 
     def get_action(self):
-        print("get")
         final_move = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         best = -1000
-        move = None
+        possible_moves = self.game.get_possible_moves()
+        move = possible_moves[0]
         for i in range(9):
             if self.game.board[i] == EMPTY:
-                print(i)
                 self.game.board[i] = self.side
-                move = max(best, self.minimax(False))
+                move = self.minimax(True)
                 self.game.board[i] = EMPTY
 
             if move > best:
@@ -47,24 +46,12 @@ class MinMaxAgent:
             #print("*******************")
             return 10 if self.game.who_won() == self.side else -10
 
-        if is_max:
-            print(is_max)
-            best = -1000
-            for i in range(9):
-                if self.game.board[i] == EMPTY:
-                    self.game.board[i] = self.side
-                    best = max(best, self.minimax(not is_max))
-                    self.game.board[i] = EMPTY
+        scores = []
+        for i in range(9):
+            if self.game.board[i] == EMPTY:
+                self.game.board[i] = self.side
+                scores.append(self.minimax(not is_max))
+                self.game.board[i] = EMPTY
 
-            return best
-        else:
-            print(is_max)
-            best = 1000
-            for i in range(9):
-                if self.game.board[i] == EMPTY:
-                    print(i)
-                    self.game.board[i] = self.side
-                    best = min(best, self.minimax(not is_max))
-                    self.game.board[i] = EMPTY
+        return max(scores) if is_max else min(scores)
 
-            return best

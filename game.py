@@ -20,6 +20,14 @@ class TicTacToe:
         self.o_wins = 0
         self.reset()
 
+    def get_possible_moves(self):
+        empty = []
+        for i in range(9):
+            if self.board[i] == EMPTY:
+                empty.append(i)
+
+        return empty
+
     def get_side(self, side):
         arr = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0])
         idx = 0

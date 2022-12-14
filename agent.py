@@ -13,7 +13,7 @@ X = 1
 O = 2
 
 
-class Agent:
+class Q_Agent:
     def __init__(self, side):
         self.n_games = 0
         self.epsilon = 0.9999
