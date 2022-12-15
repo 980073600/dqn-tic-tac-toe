@@ -54,4 +54,3 @@ class MinMaxAgent:
                 self.game.board[i] = EMPTY
 
         return max(scores) if is_max else min(scores)
-
